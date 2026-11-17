@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#000;color:#fff;padding:20px}
+.box{max-width:360px;margin:60px auto;background:#111;border:1px solid #333;border-radius:16px;padding:28px;text-align:center}
+input{width:100%;padding:14px;margin:8px 0;border-radius:10px;border:1px solid #333;background:#1e293b;color:#fff}
+button{width:100%;padding:12px;border:none;border-radius:8px;font-weight:bold;cursor:pointer}
+.card{background:#111;border:1px solid #222;border-radius:12px;padding:16px;margin:12px auto;max-width:500px;text-align:left}
+</style>
+</head>
+<body>
+<div class="box" id="loginBox">
+<h1 style="color:#c9a86a">Admin Login</h1>
+<input type="password" id="pass" placeholder="Password">
+<button onclick="doLogin()" style="background:#c9a86a">Enter</button>
+</div>
+<div id="dashBox" style="display:none;max-width:500px;margin:0 auto">
+<h2 style="color:#c9a86a;text-align:center">Admin Panel</h2>
+<div class="card"><b style="color:#e8c47a">Orders:</b> <span id="totalOrders">0</span></div>
+<div class="card"><b style="color:#e8c47a">Orders</b><div id="orderList"></div></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBfSFGhXNDQDwftQ-QYiaclG13f_ltTOe4",
+  authDomain: "lagoslife-a9887.firebaseapp.com",
+  projectId: "lagoslife-a9887",
+  storageBucket: "lagoslife-a9887.firebasestorage.app",
+  messagingSenderId: "924515570642",
+  appId: "1:924515570642:web:58e284a74d20e3ae6f6e0b",
+  measurementId: "G-0S9C8ET54G"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+function doLogin(){
+  if(document.getElementById('pass').value==='ademide2026'){
+    document.getElementById('loginBox').style.display='none';
+    document.getElementById('dashBox').style.display='block';
+    loadOrders();
+  } else alert('Wrong password');
+}
+
+function loadOrders(){
+  db.ref('orders').on('value', (snapshot) => {
+    const data = snapshot.val() || {};
+    const orders = Object.values(data).reverse();
+    document.getElementById('totalOrders').innerText = orders.length;
+    document.getElementById('orderList').innerHTML = orders.length ? orders.map(o => 
+      `<div style="background:#222;padding:10px;border-radius:8px;margin:6px 0;font-size:13px">
+        <b>${o.pkg}</b> - ${o.status}<br>
+        Username: <b style="color:#e8c47a">${o.username}</b><br>
+        Password: <b style="color:#e8c47a">${o.password || ''}</b><br>
+        ID: ${o.gameID || ''}<br>
+        ${o.time}
+      </div>`
+    ).join('') : '<p style="color:#888">No orders yet</p>';
+  });
+}
+</script>
+</body>
+                                                                                 </html>
